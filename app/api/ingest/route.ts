@@ -5,6 +5,9 @@ import {
 } from '@azure/search-documents'
 import { NextResponse } from 'next/server'
 
+import { readdir } from 'fs/promises'
+import { join } from 'path'
+
 const createSearchIndex = async () => {
   // Making sure search index exists
   const searchIndex = process.env.AZURE_SEARCH_INDEX_NAME ?? ''
@@ -80,19 +83,39 @@ const createSearchIndex = async () => {
   await client.createIndex(index)
 }
 
-export function GET(req: Request) {
-  // Create Search Index
-  createSearchIndex()
+const uploadBlobs = (filePath: string) => {
+  console.log(filePath)
+  // Connect to BlobServiceClient
 
-  // Glob.Glob Files
+  // Get the Blog Container
+  //  Create if not exists
+  // XXX: Ignore all other files but .pdf
+  // https://js.langchain.com/docs/modules/indexes/document_loaders/examples/file_loaders/pdf
+  // Split PDF into pages
+  // Upload each page
+}
+
+export async function GET(req: Request) {
+  // Create Search Index
+  // createSearchIndex()
+
+  // Get Files from 'data' folder
+  const directoryPath = join(process.cwd(), 'data')
+  const directoryFiles = await readdir(directoryPath)
 
   // For Each File
-  //  . Upload Blobs
-  //  . Get Document Text
-  //  . Create Sections
-  //  . Index Sections
+  for (const file of directoryFiles) {
+    const filePath = join(directoryPath, file)
+
+    //  . Upload Blobs
+    uploadBlobs(filePath)
+
+    //  . Get Document Text
+    //  . Create Sections
+    //  . Index Sections
+  }
 
   return NextResponse.json({
-    message: 'Hello Worlds'
+    message: 'Done'
   })
 }
